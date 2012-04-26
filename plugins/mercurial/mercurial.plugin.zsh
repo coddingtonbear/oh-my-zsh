@@ -16,15 +16,16 @@ alias hgca='hg qimport -r tip ; hg qrefresh -e ; hg qfinish tip'
 function set_hg_branch_info() {
     HG_BRANCH=""
     # Tries to use FastRoot first -- https://bitbucket.org/yaniv_aknin/fast_hg_root
-    root=$(fast_hg_root)
-    if [ "${?}" -eq "0" ] ; then
+    root=$(fast_hg_root 2> /dev/null)
+    retcode="${?}"
+    if [ "${retcode}" -eq "0" ] ; then
         HG_BRANCH=$(cat ${root}/.hg/branch 2> /dev/null) || return
-        return false
-    elif [ "${?}" -eq "127" ]; then
+        return true
+    elif [ "${retcode}" -eq "127" ]; then
         HG_BRANCH=$(hg branch 2> /dev/null) || return
-        return false
+        return true
     fi
-    return true
+    return false
 }
 
 function hg_prompt_info() {
