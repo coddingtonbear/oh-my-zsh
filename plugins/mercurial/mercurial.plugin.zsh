@@ -28,6 +28,19 @@ function set_hg_branch_info() {
     return false
 }
 
+function command_was_mercurial_interaction() {
+    PREVIOUS_CMD_WAS_HG=0
+    if [[ $1 == *hg* ]]; then
+        PREVIOUS_CMD_WAS_HG=1
+    fi
+}
+
+function conditionally_set_hg_branch_info() {
+    if [ "${PREVIOUS_CMD_WAS_HG}" -eq "1" ]; then
+        set_hg_branch_info
+    fi
+}
+
 function hg_prompt_info() {
     if [ -n "$HG_BRANCH" ]; then
         echo "$ZSH_THEME_GIT_PROMPT_PREFIX%{$HG_BRANCH%}$ZSH_THEME_GIT_PROMPT_SUFFIX"
@@ -39,3 +52,5 @@ function hg_prompt_info() {
 PERIOD=60
 add-zsh-hook chpwd set_hg_branch_info
 add-zsh-hook periodic set_hg_branch_info
+add-zsh-hook preexec command_was_mercurial_interaction
+add-zsh-hook precmd conditionally_set_hg_branch_info
