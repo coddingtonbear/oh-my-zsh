@@ -5,8 +5,6 @@ function current_timebook_status(){
     hours=$ref[(ws:|:)3];
     if [[ $end_time == "NULL" ]]; then
         echo "[${doc_status} ${hours}h] "
-    else
-        return
     fi
 }
 
@@ -22,5 +20,7 @@ function current_timesheet_balance(){
     else
         color=$FG[154]
     fi
-    echo "${color}[${curr_hours}h] "
+    if [[ $curr_hours != "NULL" ]]; then
+        echo "${color}[${curr_hours}h] "
+    fi
 }
