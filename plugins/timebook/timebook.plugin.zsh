@@ -36,7 +36,25 @@ function current_timebook_status(){
     fi;
 }
 
+function set_current_timesheet_balance(){
+    raw=$(t hours --param=balance 2> /dev/null);
+    TIMESHEET_BALANCE=$(printf "%.2f" $raw);
+}
+
 function current_timesheet_balance(){
+    if [[ $TIMESHEET_BALANCE -lt 0 ]]; then
+        color=$FG[124]
+    elif [[ $TIMESHEET_BALANCE -lt 0 ]]; then
+        color=$FG[166]
+    else
+        color=$FG[154]
+    fi;
+    if [[ $TIMESHEET_BALANCE != "NULL" ]]; then
+        echo "${color}[${TIMESHEET_BALANCE}h]"
+    fi;
+}
+
+function daily_timesheet_balance(){
     ref=$(sqlite3 -nullvalue 'NULL' ~/.config/timebook/sheets.db "
         SELECT
             ROUND(SUM(COALESCE(end_time, strftime('%s', 'now')) - start_time) / CAST(3600 AS FLOAT), 1)
@@ -45,7 +63,7 @@ function current_timesheet_balance(){
         " 2> /dev/null) || return
     curr_hours=$ref[(ws:|:)1];
     if [[ $curr_hours -lt 7 ]]; then
-        color=$FG[125]
+        color=$FG[124]
     elif [[ $curr_hours -lt 7.5 ]]; then
         color=$FG[142]
     elif [[ $curr_hours -lt 8 ]]; then
@@ -57,3 +75,6 @@ function current_timesheet_balance(){
         echo "${color}[${curr_hours}h] "
     fi
 }
+
+PERIOD=60
+add-zsh-hook periodic set_current_timesheet_balance
