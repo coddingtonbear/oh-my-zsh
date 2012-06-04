@@ -1,7 +1,9 @@
 function current_timebook_status(){
     ref=$(sqlite3 -nullvalue 'NULL' ~/.config/timebook/sheets.db "
         SELECT
-            end_time, description, ROUND((strftime('%s', 'now') - start_time) / CAST(3600 AS FLOAT), 2),
+            end_time, 
+            CASE WHEN length(description) > 0 then description else Null end as description, 
+            ROUND((strftime('%s', 'now') - start_time) / CAST(3600 AS FLOAT), 2),
             em_ticket.value,
             em_billable.value,
             Null
@@ -20,9 +22,8 @@ function current_timebook_status(){
             WHERE sheet = 'default'
         );
         " 2> /dev/null) || return
-    ref=${ref// /};
     end_time=$ref[(ws:|:)1];
-    doc_status=$ref[(ws:|:)2];
+    description=$ref[(ws:|:)2];
     hours=$ref[(ws:|:)3];
     ticket=$ref[(ws:|:)4];
     billable_string=$ref[(ws:|:)5];
@@ -31,8 +32,18 @@ function current_timebook_status(){
     else;
         billable="(¬$) ";
     fi;
+    if [[ $description == "NULL" ]]; then
+        description_string="";
+    else;
+        description_string="\"${description}\" ";
+    fi;
+    if [[ $ticket == "NULL" ]]; then
+        ticket_string="(No Ticket #) ";
+    else;
+        ticket_string="#${ticket} ";
+    fi;
     if [[ $end_time == "NULL" ]]; then
-        echo "[#${ticket}, \"${doc_status}\" ${billable}${hours}h] "
+        echo "[${ticket_string}${description_string}${billable}${hours}h] "
     fi;
 }
 
