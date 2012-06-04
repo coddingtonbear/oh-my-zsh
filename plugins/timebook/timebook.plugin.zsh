@@ -4,8 +4,8 @@ function current_timebook_status(){
             end_time, 
             CASE WHEN length(description) > 0 then description else Null end as description, 
             ROUND((strftime('%s', 'now') - start_time) / CAST(3600 AS FLOAT), 2),
-            em_ticket.value,
-            em_billable.value,
+            CASE WHEN LENGTH(COALESCE(em_ticket.value, '')) > 0 then em_ticket.value else Null end as ticket,
+            CASE WHEN LENGTH(COALESCE(em_billable.value, '')) > 0 then em_billable.value else Null end as billable,
             Null
         FROM entry e
         LEFT OUTER JOIN entry_meta em_ticket ON
