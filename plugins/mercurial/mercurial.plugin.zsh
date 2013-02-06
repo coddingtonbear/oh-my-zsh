@@ -15,6 +15,13 @@ alias hgca='hg qimport -r tip ; hg qrefresh -e ; hg qfinish tip'
 
 function hg_current_branch() {
   if [ -d .hg ]; then
-    echo hg:$(hg branch)
+    echo $(hg branch)
+  fi
+}
+
+function hg_prompt_info() {
+  ref=$(hg_current_branch)
+  if [[ -n "$ref" ]]; then
+    echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref}$ZSH_THEME_GIT_PROMPT_SUFFIX"
   fi
 }
