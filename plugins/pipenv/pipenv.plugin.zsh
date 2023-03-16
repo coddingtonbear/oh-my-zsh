@@ -1,13 +1,21 @@
-# Pipenv completion
-_pipenv() {
-  eval $(env COMMANDLINE="${words[1,$CURRENT]}" _PIPENV_COMPLETE=complete-zsh  pipenv)
-}
-compdef _pipenv pipenv
+if (( ! $+commands[pipenv] )); then
+  return
+fi
+
+# If the completion file doesn't exist yet, we need to autoload it and
+# bind it to `pipenv`. Otherwise, compinit will have already done that.
+if [[ ! -f "$ZSH_CACHE_DIR/completions/_pipenv" ]]; then
+  typeset -g -A _comps
+  autoload -Uz _pipenv
+  _comps[pipenv]=_pipenv
+fi
+
+_PIPENV_COMPLETE=zsh_source pipenv >| "$ZSH_CACHE_DIR/completions/_pipenv" &|
 
 # Automatic pipenv shell activation/deactivation
 _togglePipenvShell() {
   # deactivate shell if Pipfile doesn't exist and not in a subdir
-  if [[ ! -a "$PWD/Pipfile" ]]; then
+  if [[ ! -f "$PWD/Pipfile" ]]; then
     if [[ "$PIPENV_ACTIVE" == 1 ]]; then
       if [[ "$PWD" != "$pipfile_dir"* ]]; then
         exit
@@ -17,13 +25,15 @@ _togglePipenvShell() {
 
   # activate the shell if Pipfile exists
   if [[ "$PIPENV_ACTIVE" != 1 ]]; then
-    if [[ -a "$PWD/Pipfile" ]]; then
+    if [[ -f "$PWD/Pipfile" ]]; then
       export pipfile_dir="$PWD"
       pipenv shell
     fi
   fi
 }
-chpwd_functions+=(_togglePipenvShell)
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _togglePipenvShell
+_togglePipenvShell
 
 # Aliases
 alias pch="pipenv check"
