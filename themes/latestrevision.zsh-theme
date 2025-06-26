@@ -5,7 +5,7 @@ ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[red]%}!"
 ZSH_THEME_GIT_PROMPT_CLEAN=""
 
 function prompt_char {
-	if [ $UID -eq 0 ]; then echo "%{$fg[red]%}#%{$reset_color%}"; else echo $; fi
+	if [ $UID -eq 0 ]; then echo "%{$fg[red]%}ᐷ%{$reset_color%}"; else echo ᐷ; fi
 }
 
 function display_tw_tags() {
@@ -69,6 +69,6 @@ function display_tw_tags() {
 PROMPT='%(?, ,%{$fg[red]%}FAIL%{$reset_color%}$(echoti bel)
 )
 %{$fg[magenta]%}%n%{$reset_color%}@%{$fg[yellow]%}%m%{$reset_color%}: %{$fg_bold[blue]%}%~%{$reset_color%}$(display_tw_tags)$(git_prompt_info)
- $(prompt_char) '
+$(prompt_char) '
 
 RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
