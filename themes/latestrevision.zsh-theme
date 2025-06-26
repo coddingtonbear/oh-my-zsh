@@ -63,7 +63,7 @@ function display_tw_tags() {
     # `jq -r '.tags | join("|")'` will produce an empty string if the array is empty.
     tags_output=$(echo "$json_output" | jq -r '.tags | join("|")' 2>/dev/null)
 
-    echo " %{$fg[green]%}⬤${(S)tags_output}"
+    echo " %{$fg[green]%}⬤${(S)tags_output}%{$reset_color%}"
 }
 
 PROMPT='%(?, ,%{$fg[red]%}FAIL%{$reset_color%}$(echoti bel)
