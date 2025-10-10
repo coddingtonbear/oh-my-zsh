@@ -1,3 +1,4 @@
+setopt extended_glob
 
 ZSH_THEME_GIT_PROMPT_PREFIX=" %{$fg[white]%}⎇"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
@@ -66,9 +67,62 @@ function display_tw_tags() {
     echo " %{$fg[green]%}⬤${(S)tags_output}%{$reset_color%}"
 }
 
+# Use a variable in the prompt (no command substitution)
+typeset -g PROMPT_DOC=""
+
+# Recompute indicator safely on dir change and before each prompt
+function _update_doc_indicator() {
+  emulate -L zsh           # reset to zsh defaults for this function
+  setopt extended_glob null_glob
+
+  if [[ -e "$PWD/.reminder" ]]; then
+    PROMPT_DOC=" %{$fg[red]%}🗎%{$reset_color%}"
+    return
+  fi
+
+  # Case-insensitive readme.* (files only). (#i) is per-pattern case-insensitive.
+  local -a readmes
+  readmes=( "$PWD"/(#i)readme.*(.N) )
+  if (( ${#readmes} )); then
+    PROMPT_DOC=" %{$fg[cyan]%}🗎%{$reset_color%}"
+  else
+    PROMPT_DOC=''
+  fi
+}
+
+typeset -g PROMPT_MISE=""
+
+# Recompute mise indicator
+function _update_mise_indicator() {
+  emulate -L zsh
+  setopt extended_glob null_glob
+
+  for file in "$PWD"/package.json; do
+    if [[ -e "$file" ]]; then
+      PROMPT_MISE=" %{$fg[green]%}🟈%{$reset_color%}"
+      return
+    fi
+  done
+
+  # Check for mise config files. The loop is efficient; it returns on the first match.
+  for file in "$PWD"/.mise.toml "$PWD"/.mise.local.toml "$PWD"/mise.toml; do
+    if [[ -e "$file" ]]; then
+      PROMPT_MISE=" %{$fg[blue]%}🟈%{$reset_color%}"
+      return
+    fi
+  done
+
+  # If no files are found, ensure the indicator is empty
+  PROMPT_MISE=''
+}
+
+# Hook it up
+precmd_functions+=(_update_doc_indicator _update_mise_indicator)
+chpwd_functions+=(_update_doc_indicator _update_doc_indicator)
+
 PROMPT='%(?, ,%{$fg[red]%}FAIL%{$reset_color%}$(echoti bel)
 )
-%{$fg[magenta]%}%n%{$reset_color%}@%{$fg[yellow]%}%m%{$reset_color%}: %{$fg_bold[blue]%}%~%{$reset_color%}$(display_tw_tags)$(git_prompt_info)
+%{$fg[magenta]%}%n%{$reset_color%}@%{$fg[yellow]%}%m%{$reset_color%}: %{$fg_bold[blue]%}%~%{$reset_color%}$PROMPT_DOC$PROMPT_MISE$(display_tw_tags)$(git_prompt_info)
 $(prompt_char) '
 
 RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
