@@ -99,7 +99,7 @@ function _update_mise_indicator() {
 
   for file in "$PWD"/package.json; do
     if [[ -e "$file" ]]; then
-      PROMPT_MISE=" %{$fg[green]%}🟈%{$reset_color%}"
+      PROMPT_MISE=" %{$fg[green]%}🟂%{$reset_color%}"
       return
     fi
   done
@@ -107,7 +107,7 @@ function _update_mise_indicator() {
   # Check for mise config files. The loop is efficient; it returns on the first match.
   for file in "$PWD"/.mise.toml "$PWD"/.mise.local.toml "$PWD"/mise.toml; do
     if [[ -e "$file" ]]; then
-      PROMPT_MISE=" %{$fg[blue]%}🟈%{$reset_color%}"
+      PROMPT_MISE=" %{$fg[blue]%}🟂%{$reset_color%}"
       return
     fi
   done
