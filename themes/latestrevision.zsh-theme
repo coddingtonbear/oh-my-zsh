@@ -118,7 +118,7 @@ function _update_mise_indicator() {
 
 # Hook it up
 precmd_functions+=(_update_doc_indicator _update_mise_indicator)
-chpwd_functions+=(_update_doc_indicator _update_doc_indicator)
+chpwd_functions+=(_update_doc_indicator _update_mise_indicator)
 
 PROMPT='%(?, ,%{$fg[red]%}FAIL%{$reset_color%}$(echoti bel)
 )
