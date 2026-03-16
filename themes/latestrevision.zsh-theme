@@ -120,9 +120,13 @@ function _update_mise_indicator() {
 precmd_functions+=(_update_doc_indicator _update_mise_indicator)
 chpwd_functions+=(_update_doc_indicator _update_mise_indicator)
 
+PROMPT_TIMEWARRIOR_GRADE=" %{%F{093}%}${TIMEWARRIOR_GRADE}%{$reset_color%}"
+
 PROMPT='%(?, ,%{$fg[red]%}FAIL%{$reset_color%}$(echoti bel)
 )
-%{$fg[magenta]%}%n%{$reset_color%}@%{$fg[yellow]%}%m%{$reset_color%}: %{$fg_bold[blue]%}%~%{$reset_color%}$PROMPT_DOC$PROMPT_MISE$(display_tw_tags)$(git_prompt_info)
+%{$fg[magenta]%}%n%{$reset_color%}@%{$fg[yellow]%}%m%{$reset_color%}: %{$fg_bold[blue]%}%~%{$reset_color%}$PROMT$PROMPT_DOC$PROMPT_MISE$(git_prompt_info)
 $(prompt_char) '
 
-RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
+# ${TIMEWARRIOR_GRADE} is your async variable
+# %{$fg[green]%} resumes your existing green time logic
+RPROMPT='$(display_tw_tags)$PROMPT_TIMEWARRIOR_GRADE %{$fg[green]%}[%*]%{$reset_color%}'
