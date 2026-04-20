@@ -42,7 +42,7 @@ function display_tw_tags() {
     # we can't proceed to check for tags or "NULL" reliably.
     # In this case, we simply return, displaying nothing for tags.
     if (( tw_json_status != 0 )) || [[ -z "$json_output" ]]; then
-        echo " %{$fg[red]%}⬤%{$reset_color%}"
+        echo " %{$fg[red]%}⬢%{$reset_color%}"
         return
     fi
 
@@ -55,7 +55,7 @@ function display_tw_tags() {
     local tags_field_is_array=$? # 0 if true, non-zero if false or missing/wrong type
 
     if (( tags_field_is_array != 0 )); then
-        echo " %{$fg[yellow]%}⬤%{$reset_color%}"
+        echo " %{$fg[yellow]%}⬢%{$reset_color%}"
         return
     fi
 
@@ -64,7 +64,7 @@ function display_tw_tags() {
     # `jq -r '.tags | join("|")'` will produce an empty string if the array is empty.
     tags_output=$(echo "$json_output" | jq -r '.tags | join("|")' 2>/dev/null)
 
-    echo " %{$fg[green]%}⬤${(S)tags_output}%{$reset_color%}"
+    echo " %{$fg[green]%}⬢${(S)tags_output}%{$reset_color%}"
 }
 
 # Use a variable in the prompt (no command substitution)
